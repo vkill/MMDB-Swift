@@ -6,10 +6,11 @@ let package = Package(
     products: [
         .library(name: "MMDB", targets: ["MMDB"]),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/vkill/swift-c-libmaxminddb.git", .branch("master")),
+    ],
     targets: [
-        .target(name: "MMDB", dependencies: ["libmaxminddb"]),
+        .target(name: "MMDB", dependencies: ["ClibmaxminddbExtras"]),
         .testTarget(name: "MMDBTests", dependencies: ["MMDB"]),
-        .target(name: "libmaxminddb")
     ]
 )

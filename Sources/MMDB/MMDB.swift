@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ClibmaxminddbExtras
 
 public struct MMDBContinent {
     public var code: String?
@@ -19,14 +20,15 @@ public struct MMDBCountry: CustomStringConvertible {
     public var names = [String: String]()
 
     init(dictionary: NSDictionary) {
-        if let dict = dictionary["continent"] as? NSDictionary,
+        // Linux should as Dictionary<AnyHashable,Any>
+        if let dict = dictionary["continent"] as? Dictionary<AnyHashable,Any>, //NSDictionary
             let code = dict["code"] as? String,
             let continentNames = dict["names"] as? [String: String]
         {
             continent.code = code
             continent.names = continentNames
         }
-        if let dict = dictionary["country"] as? NSDictionary,
+        if let dict = dictionary["country"] as? Dictionary<AnyHashable,Any>, //NSDictionary
             let iso = dict["iso_code"] as? String,
             let countryNames = dict["names"] as? [String: String]
         {
@@ -83,7 +85,7 @@ final public class MMDB {
         return nil
     }
     private func openDB(atPath: String) -> Bool {
-        let cfilename = (atPath as NSString).utf8String
+        let cfilename = strdup(atPath) //(atPath as NSString).utf8String
         let cfilenamePtr = UnsafePointer<Int8>(cfilename)
         let status = MMDB_open(cfilenamePtr, UInt32(MMDB_MODE_MASK), &db)
         if status != MMDB_SUCCESS {
@@ -95,14 +97,15 @@ final public class MMDB {
     }
 
     fileprivate func lookupString(_ s: String) -> MMDB_lookup_result_s? {
-        let string = (s as NSString).utf8String
+        let string = strdup(s) //(s as NSString).utf8String
         let stringPtr = UnsafePointer<Int8>(string)
 
         var gaiError: Int32 = 0
         var error: Int32 = 0
 
         let result = MMDB_lookup_string(&db, stringPtr, &gaiError, &error)
-        if gaiError == noErr && error == noErr {
+        //if gaiError == noErr && error == noErr {
+        if gaiError == 0 && error == 0 {
             return result
         }
         return nil
