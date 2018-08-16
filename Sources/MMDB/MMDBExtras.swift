@@ -7,7 +7,7 @@ extension MMDB {
         }
         var formattedDictionary: [String:Dictionary<AnyHashable,Any>] = [:]
         for (key, value) in dictionary {
-            guard let key = key as? String else {
+            guard let data = (key as? NSString)?.data(using: String.Encoding.utf8.rawValue), let key = String(data: data, encoding: .utf8) else {
                 continue
             }
             guard let value = value as? Dictionary<AnyHashable,Any>, !value.isEmpty else {
